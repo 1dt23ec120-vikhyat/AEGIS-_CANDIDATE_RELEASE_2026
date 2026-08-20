@@ -1,0 +1,12 @@
+# Application configuration.
+# Environment and debug are typically overridden per machine via AEGIS_ENV /
+# AEGIS_DEBUG. The embedded backend binds to loopback by default (decision #1).
+application:
+  name: "AEGIS+"
+  version: "0.1.0"
+  environment: "development"
+  debug: true
+
+backend:
+  host: "127.0.0.1"
+  port: 8137

@@ -1,0 +1,85 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---------------------------------------------------------------------------
+# Virtual environments
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Tooling caches
+# ---------------------------------------------------------------------------
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.cache/
+
+# ---------------------------------------------------------------------------
+# Secrets and local configuration — never commit real credentials.
+# `.env.example` IS committed as the template.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+config/*.local.yaml
+
+# ---------------------------------------------------------------------------
+# Runtime data (kept out of version control; directories preserved via .gitkeep)
+# ---------------------------------------------------------------------------
+logs/*
+!logs/.gitkeep
+reports/*
+!reports/.gitkeep
+database/sqlite/*
+!database/sqlite/.gitkeep
+database/backups/*
+!database/backups/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+
+# ---------------------------------------------------------------------------
+# AI model binaries (tracked via registry metadata, not committed directly)
+# ---------------------------------------------------------------------------
+models/**/*.pt
+models/**/*.pth
+models/**/*.onnx
+models/**/*.bin
+models/**/*.h5
+models/**/*.pkl
+models/**/*.joblib
+
+# ---------------------------------------------------------------------------
+# OS / IDE
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Import Linter cache
+.import_linter_cache/
+
+# Gmail connector — local OAuth tokens and credentials (M14). Never commit.
+data/gmail/
+*token*.json
+gmail-credentials.json
+client_secret*.json
+credentials.json

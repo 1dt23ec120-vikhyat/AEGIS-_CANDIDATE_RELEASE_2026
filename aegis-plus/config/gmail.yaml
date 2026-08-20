@@ -1,0 +1,32 @@
+# Gmail read-only connector configuration (M14).
+#
+# Gmail is a READ-ONLY input source: messages are fetched and fed into the
+# existing Email Analysis pipeline. The connector never sends, deletes, or
+# modifies mail. The requested scope is strictly the read-only Gmail scope and is
+# validated at load time.
+#
+# Secrets are NEVER stored here:
+#   - The OAuth client id is not a secret and may be set via AEGIS_GMAIL_CLIENT_ID
+#     or the `client_id` field below.
+#   - The OAuth client secret is read from the environment variable named by
+#     `client_secret_env` (default AEGIS_GMAIL_CLIENT_SECRET).
+#   - User access/refresh tokens are stored in a protected local file outside the
+#     repository, never in configuration, logs, or the database.
+gmail:
+  enabled: true
+
+  auth_uri: "https://accounts.google.com/o/oauth2/v2/auth"
+  token_uri: "https://oauth2.googleapis.com/token"
+  api_base_url: "https://gmail.googleapis.com"
+
+  client_id: ""
+  client_secret_env: "AEGIS_GMAIL_CLIENT_SECRET"
+
+  scope: "https://www.googleapis.com/auth/gmail.readonly"
+
+  loopback_host: "127.0.0.1"
+  loopback_timeout_seconds: 180.0
+
+  default_query: "in:inbox"
+  max_list_results: 25
+  request_timeout_seconds: 30.0

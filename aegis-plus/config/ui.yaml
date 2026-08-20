@@ -1,0 +1,4 @@
+# User interface configuration.
+ui:
+  theme: "dark"
+  language: "en"

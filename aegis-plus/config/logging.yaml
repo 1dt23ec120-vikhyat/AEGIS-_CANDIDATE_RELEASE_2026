@@ -1,0 +1,6 @@
+# Logging policy. Consumed by the logging runtime (infrastructure/logging).
+logging:
+  level: "INFO"
+  directory: "logs"
+  rotation: "10 MB"
+  retention_days: 14

@@ -1,0 +1,26 @@
+# AI Security Copilot configuration (M12).
+#
+# The Copilot is a read-only intelligence consumer. It explains and reasons over
+# the platform's deterministic intelligence and is never a source of truth.
+# The API key is read from the environment variable named by `api_key_env`; no
+# secret is stored in configuration.
+copilot:
+  enabled: true
+  provider: "claude"
+  model: "claude-sonnet-4-6"
+  api_base_url: "https://api.anthropic.com"
+  api_key_env: "ANTHROPIC_API_KEY"
+  anthropic_version: "2023-06-01"
+
+  max_tokens: 1024
+  temperature: 0.1
+  request_timeout_seconds: 30.0
+
+  context_token_budget: 6000
+  max_context_items: 24
+
+  max_sessions: 100
+  max_turns_per_session: 20
+  history_turns_in_prompt: 4
+
+  strict_grounding: false

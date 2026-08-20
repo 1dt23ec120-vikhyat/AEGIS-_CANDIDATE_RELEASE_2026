@@ -1,0 +1,26 @@
+# AEGIS+ runtime dependencies (frozen technology stack — SADD §12, AD-007).
+# Compatible-release pins (~=) allow patch/minor security updates while keeping
+# the major line fixed. A fully pinned lockfile is a planned follow-up.
+
+# Configuration (Pydantic + .env) — SADD §12 "Configuration"
+pydantic~=2.10
+pydantic-settings~=2.7
+python-dotenv~=1.0
+PyYAML~=6.0
+
+# Logging — SADD §12 "Logging"
+loguru~=0.7
+
+# Persistence (ORM + migrations) — SADD §12 "ORM", DBAD
+SQLAlchemy~=2.0
+alembic~=1.14
+
+# Embedded local backend (decision #1: FastAPI over localhost) — SADD §12 "Backend"
+fastapi~=0.115
+uvicorn[standard]~=0.34
+python-multipart~=0.0
+httpx~=0.28
+
+# Desktop presentation — SADD §12 "Desktop Framework"
+PySide6~=6.8
+lightgbm~=4.7

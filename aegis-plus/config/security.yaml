@@ -1,0 +1,5 @@
+# Security configuration.
+# NOTE: The secret key is intentionally NOT stored here. It is supplied only
+# through the environment (AEGIS_SECRET_KEY), never committed to a file (NFR §7).
+security:
+  session_timeout_minutes: 30

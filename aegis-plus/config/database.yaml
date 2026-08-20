@@ -1,0 +1,5 @@
+# Database configuration (SQLite for v1.0; database-agnostic, PostgreSQL-ready).
+# The connection URL may be overridden via AEGIS_DATABASE_URL.
+database:
+  url: "sqlite:///database/sqlite/aegis.db"
+  echo: false

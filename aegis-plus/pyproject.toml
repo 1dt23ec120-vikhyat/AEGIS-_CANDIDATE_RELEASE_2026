@@ -1,0 +1,258 @@
+# AEGIS+ project and tooling configuration.
+#
+# This file centralizes developer-tooling configuration so that the coding
+# standards (Development_Standards.md) and architectural boundaries
+# (Folder_Structure.md, SADD) are enforced automatically from the first commit.
+#
+# Standards enforced here:
+#   - Python 3.12+            (Development_Standards §"Python Version")
+#   - Line length: 100        (Development_Standards §"Maximum Line Length")
+#   - 4-space indentation     (Development_Standards §"Indentation")
+#   - Black formatting, Ruff linting, isort import ordering, mypy typing
+#   - Google-style docstrings, mandatory type hints on public APIs
+#
+# AEGIS+ is an application (not a distributable library). Its top-level
+# packages (core, services, ui, ...) are imported directly per the Knowledge
+# Base import convention (e.g. `from core.entities import ...`).
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-plus"
+version = "0.1.0"
+description = "AI-Based Integrated Multi-Layer Identity Attack and Phishing Detection System with Automated Incident Response"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Team AEGIS+" }]
+
+[tool.setuptools]
+# Application layout: first-party packages live at the repository root and are
+# imported by name. They are not packaged for distribution in v1.0.
+packages = [
+    "application",
+    "core",
+    "ai",
+    "data",
+    "services",
+    "infrastructure",
+    "ui",
+]
+
+# ---------------------------------------------------------------------------
+# Black — code formatter (authoritative for formatting)
+# ---------------------------------------------------------------------------
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+# ---------------------------------------------------------------------------
+# Ruff — linter and import sorter (isort rules). Formatting is delegated to
+# Black; Ruff's default rule set is Black-compatible.
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["."]
+
+[tool.ruff.lint]
+# Rule families:
+#   E,W  pycodestyle   F  pyflakes        I  isort
+#   N    pep8-naming   D  pydocstyle      UP pyupgrade
+#   B    bugbear       C4 comprehensions  SIM flake8-simplify
+#   PL   pylint        RUF ruff-specific
+select = ["E", "W", "F", "I", "N", "D", "UP", "B", "C4", "SIM", "PL", "RUF"]
+ignore = [
+    "D203",  # one-blank-line-before-class (conflicts with D211)
+    "D213",  # multi-line-summary-second-line (conflicts with D212)
+    "PLE1205",  # logging-too-many-args: assumes stdlib %-style; AEGIS+ uses
+    #            Loguru brace-style formatting everywhere (logging standard).
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pep8-naming]
+# Interface classes use the `I` prefix per Development_Standards §13.
+# (No relaxation needed; documented here for reviewers.)
+
+[tool.ruff.lint.pylint]
+# Data-carrying domain entities legitimately take several keyword-only fields.
+max-args = 10
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "application",
+    "core",
+    "ai",
+    "data",
+    "services",
+    "infrastructure",
+    "ui",
+]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests may use assert-style and need not carry full public-API docstrings.
+"tests/**" = ["D100", "D101", "D102", "D103", "D104", "PLR2004"]
+# The heuristic analyzer encodes domain risk thresholds inline in its declarative
+# rule table; naming each as a constant would reduce, not improve, readability.
+"ai/url_analysis/analyzer.py" = ["PLR2004"]
+# Package markers need only a module docstring.
+"**/__init__.py" = ["D104"]
+# Alembic migrations are generated artifacts; relax import ordering and docs.
+"database/migrations/**" = ["D", "I001", "E501", "W291", "W293"]
+
+# ---------------------------------------------------------------------------
+# Mypy — static type checking (Development_Standards §"Type Hint Standards")
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+files = [
+    "main.py",
+    "application",
+    "config",
+    "core",
+    "ai",
+    "data",
+    "services",
+    "infrastructure",
+    "ui",
+    "tests",
+]
+namespace_packages = true
+explicit_package_bases = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+show_error_codes = true
+pretty = true
+
+# Third-party packages without bundled type stubs. Extend as dependencies land.
+[[tool.mypy.overrides]]
+module = ["loguru.*", "PySide6.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# Pytest — test runner
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers --strict-config"
+markers = [
+    "unit: isolated unit tests",
+    "integration: cross-component integration tests",
+    "system: end-to-end system tests",
+    "security: security-focused tests",
+    "performance: performance and load tests",
+    "ui: PySide6 UI tests (run headless via the offscreen platform)",
+]
+
+# ---------------------------------------------------------------------------
+# Import Linter — enforces the Clean Architecture dependency direction.
+#
+# The project realizes the Folder Structure's Core<->Infrastructure relationship
+# via the Dependency Inversion Principle (project core-contracts / domain-purity
+# standards): Core defines the contracts (ports) and Infrastructure/AI implement
+# them, so *source* dependencies point inward toward Core. The FSS Module
+# Communication Rules describe runtime/logical access; these contracts encode the
+# import direction that realizes it.
+#
+# NOTE (decision #1 — UI<->backend over HTTP): the `ui -> services` prohibition
+# is ACTIVE as of M1b/WP7. The UI reaches the backend only over HTTP through its
+# own gateway (`ui/backend`), so it imports neither services nor infrastructure;
+# the embedded FastAPI backend is the delivery mechanism (ADR-002).
+# ---------------------------------------------------------------------------
+[tool.importlinter]
+root_packages = [
+    "application",
+    "ui",
+    "services",
+    "core",
+    "infrastructure",
+    "ai",
+    "data",
+    "config",
+]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Core depends on no other internal package (innermost layer)"
+type = "forbidden"
+source_modules = ["core"]
+forbidden_modules = [
+    "application",
+    "ui",
+    "services",
+    "infrastructure",
+    "ai",
+    "data",
+    "config",
+]
+
+[[tool.importlinter.contracts]]
+name = "Core is framework-independent (Domain Purity)"
+type = "forbidden"
+source_modules = ["core"]
+forbidden_modules = [
+    "loguru",
+    "sqlalchemy",
+    "alembic",
+    "fastapi",
+    "starlette",
+    "uvicorn",
+    "httpx",
+    "pydantic",
+    "pydantic_settings",
+    "PySide6",
+    "yaml",
+    "dotenv",
+]
+
+[[tool.importlinter.contracts]]
+name = "Config is a foundational leaf (depends on no internal package)"
+type = "forbidden"
+source_modules = ["config"]
+forbidden_modules = [
+    "application",
+    "ui",
+    "services",
+    "core",
+    "infrastructure",
+    "ai",
+    "data",
+]
+
+[[tool.importlinter.contracts]]
+name = "Services depend inward only (Core, not delivery or adapters)"
+type = "forbidden"
+source_modules = ["services"]
+forbidden_modules = ["application", "ui", "infrastructure", "ai"]
+
+[[tool.importlinter.contracts]]
+name = "UI depends on Core only; reaches services over HTTP, not by import"
+type = "forbidden"
+source_modules = ["ui"]
+forbidden_modules = ["application", "services", "infrastructure", "ai"]
+
+[[tool.importlinter.contracts]]
+name = "Infrastructure implements Core; it never reaches delivery layers or AI"
+type = "forbidden"
+source_modules = ["infrastructure"]
+forbidden_modules = ["application", "ui", "services", "ai"]
+
+[[tool.importlinter.contracts]]
+name = "AI implements Core and stays isolated from delivery and adapters"
+type = "forbidden"
+source_modules = ["ai"]
+forbidden_modules = ["application", "ui", "services", "infrastructure"]

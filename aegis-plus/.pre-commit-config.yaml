@@ -1,0 +1,55 @@
+# Pre-commit hooks — enforce standards and architecture boundaries before code
+# enters version control. Run `pre-commit install` once after cloning.
+#
+# Ordering: fast hygiene checks first, then formatting (Black), then linting
+# (Ruff), then typing (Mypy), then architectural boundaries (Import Linter).
+minimum_pre_commit_version: "3.5.0"
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.1
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pydantic>=2.10
+          - types-PyYAML
+        pass_filenames: false
+        args: ["--config-file=pyproject.toml"]
+
+  - repo: local
+    hooks:
+      - id: import-linter
+        name: import-linter (architecture boundaries)
+        entry: lint-imports
+        language: python
+        additional_dependencies: ["import-linter==2.1"]
+        pass_filenames: false
+        always_run: true

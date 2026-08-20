@@ -1,0 +1,23 @@
+# AEGIS+ developer tooling. Install with:
+#   pip install -r requirements.txt -r requirements-dev.txt
+#
+# Versions are pinned to match .pre-commit-config.yaml so that local runs and
+# pre-commit produce identical results.
+
+-r requirements.txt
+
+# Formatting / linting / typing
+black==24.10.0
+ruff==0.8.6
+mypy==1.14.1
+types-PyYAML~=6.0
+
+# Testing
+pytest~=8.3
+pytest-cov~=6.0
+
+# Architecture boundary enforcement
+import-linter==2.1
+
+# Git hook manager
+pre-commit~=4.0
