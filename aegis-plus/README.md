@@ -7,9 +7,6 @@ analyzes, explains, and responds to phishing and identity-based attacks using a
 multi-layer AI framework with Explainable AI (XAI) and Automated Incident
 Response (AIR).
 
-> Status: **Phase 3 — Core Development**. This repository currently contains the
-> project foundation (Milestone 1a). See `docs/` and the project Knowledge Base
-> for architecture and specifications.
 
 ---
 
